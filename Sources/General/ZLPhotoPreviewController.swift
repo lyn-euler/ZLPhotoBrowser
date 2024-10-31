@@ -127,14 +127,16 @@ class ZLPhotoPreviewController: UIViewController {
         let btn = createBtn(localLanguageTextValue(.originalPhoto), #selector(originalPhotoClick))
         btn.titleLabel?.lineBreakMode = .byCharWrapping
         btn.titleLabel?.numberOfLines = 2
-        btn.contentHorizontalAlignment = .left
+        
         btn.setImage(.zl.getImage("zl_btn_original_circle"), for: .normal)
         btn.setImage(.zl.getImage("zl_btn_original_selected"), for: .selected)
         btn.setImage(.zl.getImage("zl_btn_original_selected"), for: [.selected, .highlighted])
         btn.adjustsImageWhenHighlighted = false
         if isRTL() {
+            btn.contentHorizontalAlignment = .right
             btn.titleEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 5)
         } else {
+            btn.contentHorizontalAlignment = .left
             btn.titleEdgeInsets = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 0)
         }
         return btn
@@ -316,7 +318,13 @@ class ZLPhotoPreviewController: UIViewController {
         
         let editTitle = localLanguageTextValue(.edit)
         let editBtnW = editTitle.zl.boundingRect(font: ZLLayout.bottomToolTitleFont, limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: 30)).width
-        editBtn.frame = CGRect(x: 15, y: btnY, width: min(btnMaxWidth, editBtnW), height: btnH)
+        if isRTL() {
+            let width = min(btnMaxWidth, editBtnW)
+            editBtn.frame = CGRect(x: bottomView.bounds.width - width - 15, y: btnY, width: width, height: btnH)
+        }else {
+            editBtn.frame = CGRect(x: 15, y: btnY, width: min(btnMaxWidth, editBtnW), height: btnH)
+        }
+        
         
         let originalTitle = localLanguageTextValue(.originalPhoto)
         let originBtnW = originalTitle.zl.boundingRect(
@@ -340,7 +348,12 @@ class ZLPhotoPreviewController: UIViewController {
                 font: ZLLayout.bottomToolTitleFont,
                 limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: 30)
             ).width + 20
-        doneBtn.frame = CGRect(x: bottomView.bounds.width - doneBtnW - 15, y: btnY, width: doneBtnW, height: btnH)
+        if isRTL() {
+            doneBtn.frame = CGRect(x: 15, y: btnY, width: doneBtnW, height: btnH)
+        } else {
+            doneBtn.frame = CGRect(x: bottomView.bounds.width - doneBtnW - 15, y: btnY, width: doneBtnW, height: btnH)
+        }
+        
     }
     
     private func setupUI() {

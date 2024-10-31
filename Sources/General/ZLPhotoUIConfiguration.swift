@@ -191,6 +191,7 @@ public class ZLPhotoUIConfiguration: NSObject {
     public var languageType: ZLLanguageType = .system {
         didSet {
             ZLCustomLanguageDeploy.language = languageType
+            ZLCustomLanguageDeploy.deploy.removeAll()
             Bundle.resetLanguage()
         }
     }

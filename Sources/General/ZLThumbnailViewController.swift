@@ -73,14 +73,16 @@ class ZLThumbnailViewController: UIViewController {
         let btn = createBtn(localLanguageTextValue(.originalPhoto), #selector(originalPhotoClick))
         btn.titleLabel?.lineBreakMode = .byCharWrapping
         btn.titleLabel?.numberOfLines = 2
-        btn.contentHorizontalAlignment = .left
+        
         btn.setImage(.zl.getImage("zl_btn_original_circle"), for: .normal)
         btn.setImage(.zl.getImage("zl_btn_original_selected"), for: .selected)
         btn.setImage(.zl.getImage("zl_btn_original_selected"), for: [.selected, .highlighted])
         btn.adjustsImageWhenHighlighted = false
         if isRTL() {
+            btn.contentHorizontalAlignment = .right
             btn.titleEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 5)
         } else {
+            btn.contentHorizontalAlignment = .left
             btn.titleEdgeInsets = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 0)
         }
         btn.isHidden = !(ZLPhotoConfiguration.default().allowSelectOriginal && ZLPhotoConfiguration.default().allowSelectImage)
@@ -360,7 +362,14 @@ class ZLThumbnailViewController: UIViewController {
             let btnY = showLimitAuthTipsView ? ZLLimitedAuthorityTipsView.height + ZLLayout.bottomToolBtnY : ZLLayout.bottomToolBtnY
             let previewTitle = localLanguageTextValue(.preview)
             let previewBtnW = previewTitle.zl.boundingRect(font: ZLLayout.bottomToolTitleFont, limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: 30)).width
-            previewBtn.frame = CGRect(x: 15, y: btnY, width: min(btnMaxWidth, previewBtnW), height: btnH)
+            let previewBtnWidth = min(btnMaxWidth, previewBtnW)
+            if isRTL() {
+                let x = bottomView.zl.width - previewBtnWidth - 15
+                previewBtn.frame = CGRect(x: x, y: btnY, width: previewBtnWidth, height: btnH)
+            }else {
+                previewBtn.frame = CGRect(x: 15, y: btnY, width: previewBtnWidth, height: btnH)
+            }
+            
             
             let originalTitle = localLanguageTextValue(.originalPhoto)
             let originBtnW = originalTitle.zl.boundingRect(
@@ -372,6 +381,7 @@ class ZLThumbnailViewController: UIViewController {
             ).width + (originalBtn.currentImage?.size.width ?? 19) + 12
             let originBtnMaxW = min(btnMaxWidth, originBtnW)
             originalBtn.frame = CGRect(x: (bottomView.zl.width - originBtnMaxW) / 2 - 5, y: btnY, width: originBtnMaxW, height: btnH)
+            
             
             let originalLabelH = originalLabel.font.lineHeight
             let originalLabelY = min(originalBtn.zl.bottom, bottomView.zl.height - originalLabelH)
@@ -901,7 +911,12 @@ class ZLThumbnailViewController: UIViewController {
             ).width + 20
         
         let btnY = showLimitAuthTipsView ? ZLLimitedAuthorityTipsView.height + ZLLayout.bottomToolBtnY : ZLLayout.bottomToolBtnY
-        doneBtn.frame = CGRect(x: bottomView.bounds.width - doneBtnW - 15, y: btnY, width: doneBtnW, height: ZLLayout.bottomToolBtnH)
+        if isRTL() {
+            doneBtn.frame = CGRect(x: 15, y: btnY, width: doneBtnW, height: ZLLayout.bottomToolBtnH)
+        }else {
+            doneBtn.frame = CGRect(x: bottomView.bounds.width - doneBtnW - 15, y: btnY, width: doneBtnW, height: ZLLayout.bottomToolBtnH)
+        }
+        
     }
     
     private func scrollToTopOrBottom() {
@@ -1634,9 +1649,17 @@ class ZLEmbedAlbumListNavView: UIView {
         refreshTitleViewFrame()
         if ZLPhotoUIConfiguration.default().navCancelButtonStyle == .text {
             let cancelBtnW = localLanguageTextValue(.cancel).zl.boundingRect(font: ZLLayout.navTitleFont, limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: 44)).width
-            cancelBtn.frame = CGRect(x: insets.left + 20, y: insets.top, width: cancelBtnW, height: 44)
+            var x = insets.left + 20
+            if isRTL() {
+                x = self.bounds.width - insets.right - 20 - cancelBtnW
+            }
+            cancelBtn.frame = CGRect(x: x, y: insets.top, width: cancelBtnW, height: 44)
         } else {
-            cancelBtn.frame = CGRect(x: insets.left + 10, y: insets.top, width: 44, height: 44)
+            var x = insets.left + 10
+            if isRTL() {
+                x = self.bounds.width - insets.right - 10 - 44
+            }
+            cancelBtn.frame = CGRect(x: x, y: insets.top, width: 44, height: 44)
         }
     }
     
@@ -1656,6 +1679,25 @@ class ZLEmbedAlbumListNavView: UIView {
             ).width
         )
         let titleBgControlW = albumTitleW + ZLEmbedAlbumListNavView.arrowH + 20
+        if isRTL() {
+            self.arrow.frame = CGRect(
+                x: 10,
+                y: (ZLEmbedAlbumListNavView.titleViewH - ZLEmbedAlbumListNavView.arrowH) / 2.0,
+                width: ZLEmbedAlbumListNavView.arrowH,
+                height: ZLEmbedAlbumListNavView.arrowH
+            )
+            self.albumTitleLabel.frame = CGRect(x: self.arrow.frame.maxX + 5, y: 0, width: albumTitleW, height: ZLEmbedAlbumListNavView.titleViewH)
+            
+        }else {
+            self.albumTitleLabel.frame = CGRect(x: 10, y: 0, width: albumTitleW, height: ZLEmbedAlbumListNavView.titleViewH)
+            self.arrow.frame = CGRect(
+                x: self.albumTitleLabel.frame.maxX + 5,
+                y: (ZLEmbedAlbumListNavView.titleViewH - ZLEmbedAlbumListNavView.arrowH) / 2.0,
+                width: ZLEmbedAlbumListNavView.arrowH,
+                height: ZLEmbedAlbumListNavView.arrowH
+            )
+        }
+        
         
         UIView.animate(withDuration: 0.25) {
             self.titleBgControl.frame = CGRect(
@@ -1664,13 +1706,7 @@ class ZLEmbedAlbumListNavView: UIView {
                 width: titleBgControlW,
                 height: ZLEmbedAlbumListNavView.titleViewH
             )
-            self.albumTitleLabel.frame = CGRect(x: 10, y: 0, width: albumTitleW, height: ZLEmbedAlbumListNavView.titleViewH)
-            self.arrow.frame = CGRect(
-                x: self.albumTitleLabel.frame.maxX + 5,
-                y: (ZLEmbedAlbumListNavView.titleViewH - ZLEmbedAlbumListNavView.arrowH) / 2.0,
-                width: ZLEmbedAlbumListNavView.arrowH,
-                height: ZLEmbedAlbumListNavView.arrowH
-            )
+            
         }
     }
     
@@ -1843,7 +1879,13 @@ class ZLLimitedAuthorityTipsView: UIView {
         return label
     }()
     
-    private lazy var arrow = UIImageView(image: .zl.getImage("zl_right_arrow"))
+    private lazy var arrow = {
+        let image = UIImage.zl.getImage("zl_right_arrow")
+        if isRTL() {
+            return UIImageView(image: image?.imageFlippedForRightToLeftLayoutDirection())
+        }
+        return UIImageView(image: image)
+    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -1863,10 +1905,16 @@ class ZLLimitedAuthorityTipsView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        if isRTL() {
+            icon.frame = CGRect(x: self.bounds.width - 25 - 18, y: (ZLLimitedAuthorityTipsView.height - 25) / 2, width: 25, height: 25)
+            tipsLabel.frame = CGRect(x: 37, y: (ZLLimitedAuthorityTipsView.height - 40) / 2, width: frame.width - 55 - 30, height: 40)
+            arrow.frame = CGRect(x: 18, y: (ZLLimitedAuthorityTipsView.height - 12) / 2, width: 12, height: 12)
+        }else {
+            icon.frame = CGRect(x: 18, y: (ZLLimitedAuthorityTipsView.height - 25) / 2, width: 25, height: 25)
+            tipsLabel.frame = CGRect(x: 55, y: (ZLLimitedAuthorityTipsView.height - 40) / 2, width: frame.width - 55 - 30, height: 40)
+            arrow.frame = CGRect(x: frame.width - 25, y: (ZLLimitedAuthorityTipsView.height - 12) / 2, width: 12, height: 12)
+        }
         
-        icon.frame = CGRect(x: 18, y: (ZLLimitedAuthorityTipsView.height - 25) / 2, width: 25, height: 25)
-        tipsLabel.frame = CGRect(x: 55, y: (ZLLimitedAuthorityTipsView.height - 40) / 2, width: frame.width - 55 - 30, height: 40)
-        arrow.frame = CGRect(x: frame.width - 25, y: (ZLLimitedAuthorityTipsView.height - 12) / 2, width: 12, height: 12)
     }
     
     @objc private func tapAction() {
