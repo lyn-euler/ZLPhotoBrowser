@@ -89,7 +89,12 @@ class ZLPhotoPreviewController: UIViewController {
     private lazy var selectBtn: ZLEnlargeButton = {
         let btn = ZLEnlargeButton(type: .custom)
         btn.setImage(.zl.getImage("zl_btn_unselected_with_check"), for: .normal)
-        btn.setImage(.zl.getImage("zl_btn_selected"), for: .selected)
+        
+        if #available(iOS 13.0, *) {
+            btn.setImage(.zl.getImage("zl_btn_selected")?.withTintColor(.zl.selectBtnTintColor), for: .selected)
+        } else {
+            btn.setImage(.zl.getImage("zl_btn_selected"), for: .selected)
+        }
         btn.enlargeInset = 10
         btn.addTarget(self, action: #selector(selectBtnClick), for: .touchUpInside)
         return btn
@@ -129,8 +134,16 @@ class ZLPhotoPreviewController: UIViewController {
         btn.titleLabel?.numberOfLines = 2
         
         btn.setImage(.zl.getImage("zl_btn_original_circle"), for: .normal)
-        btn.setImage(.zl.getImage("zl_btn_original_selected"), for: .selected)
-        btn.setImage(.zl.getImage("zl_btn_original_selected"), for: [.selected, .highlighted])
+//        btn.setImage(.zl.getImage("zl_btn_original_selected"), for: .selected)
+//        btn.setImage(.zl.getImage("zl_btn_original_selected"), for: [.selected, .highlighted])
+        if #available(iOS 13.0, *) {
+            
+            btn.setImage(.zl.getImage("zl_btn_original_selected")?.withTintColor(.zl.selectBtnTintColor), for: .selected)
+            btn.setImage(.zl.getImage("zl_btn_original_selected")?.withTintColor(.zl.selectBtnTintColor), for: [.selected, .highlighted])
+        } else {
+            btn.setImage(.zl.getImage("zl_btn_original_selected"), for: .selected)
+            btn.setImage(.zl.getImage("zl_btn_original_selected"), for: [.selected, .highlighted])
+        }
         btn.adjustsImageWhenHighlighted = false
         if isRTL() {
             btn.contentHorizontalAlignment = .right

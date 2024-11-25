@@ -75,8 +75,16 @@ class ZLThumbnailViewController: UIViewController {
         btn.titleLabel?.numberOfLines = 2
         
         btn.setImage(.zl.getImage("zl_btn_original_circle"), for: .normal)
-        btn.setImage(.zl.getImage("zl_btn_original_selected"), for: .selected)
-        btn.setImage(.zl.getImage("zl_btn_original_selected"), for: [.selected, .highlighted])
+        if #available(iOS 13.0, *) {
+            
+            btn.setImage(.zl.getImage("zl_btn_original_selected")?.withTintColor(.zl.selectBtnTintColor), for: .selected)
+            btn.setImage(.zl.getImage("zl_btn_original_selected")?.withTintColor(.zl.selectBtnTintColor), for: [.selected, .highlighted])
+        } else {
+            btn.setImage(.zl.getImage("zl_btn_original_selected"), for: .selected)
+            btn.setImage(.zl.getImage("zl_btn_original_selected"), for: [.selected, .highlighted])
+        }
+        
+        
         btn.adjustsImageWhenHighlighted = false
         if isRTL() {
             btn.contentHorizontalAlignment = .right

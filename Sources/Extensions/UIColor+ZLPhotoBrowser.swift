@@ -27,6 +27,7 @@
 import UIKit
 
 extension ZLPhotoBrowserWrapper where Base: UIColor {
+    
     static var navBarColor: UIColor {
         ZLPhotoUIConfiguration.default().navBarColor
     }
@@ -68,6 +69,11 @@ extension ZLPhotoBrowserWrapper where Base: UIColor {
     /// 预览选择模式下 选择照片大于0时，取消按钮title颜色
     static var previewBtnHighlightTitleColor: UIColor {
         ZLPhotoUIConfiguration.default().sheetBtnTitleTintColor
+    }
+    
+    /// 选中按钮tint color
+    static var selectBtnTintColor: UIColor {
+        ZLPhotoUIConfiguration.default().themeColor
     }
     
     /// 相册列表界面背景色
